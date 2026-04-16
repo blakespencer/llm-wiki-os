@@ -135,9 +135,29 @@ Apply the three mandatory checks from `wiki/CLAUDE.md`:
 2. Coverage gaps → note what's missing
 3. Overlap divergence → compare in the overlap period
 
+**Source epistemology (MANDATORY on every dataset page):**
+Every dataset page MUST include a `### Source assessment` section. This is not optional. Apply the seven questions from `wiki/CLAUDE.md`:
+1. Methodology — how was this data produced?
+2. Definitions — what exactly is being measured? What could it mean differently?
+3. What's NOT measured — what did they leave out and why?
+4. Who commissioned it and why — what were they looking for?
+5. Who benefits from this conclusion — follow the incentive
+6. Revisions and controversies — track record, past challenges
+7. Comparison sources — is there another source measuring the same thing?
+
+Do NOT wait for the user to ask for this. It is part of the ingest, every time.
+
 ### Step 6: Create synthesis pages
 
 **Be aggressive.** If the ingested source connects to 2+ existing datasets in a non-obvious way, create a `synthesis/` page. Synthesis pages are the wiki's highest-value output.
+
+**Every synthesis page MUST include:**
+
+1. **`### Through different lenses`** — read `wiki/frameworks/` and apply whichever lenses genuinely illuminate the question. Cite specific evidence from the ingested data. Don't force-fit all lenses — use what fits.
+
+2. **Popperian caveat at the end** — "These are conjectures supported by the evidence. They are not proven. Alternative explanations exist." This is not optional hedging. It's precision about what the data can and cannot tell us.
+
+3. **Multiple interpretations** — per the schema's core principle: single-answer analysis is always wrong. Present at least 2-3 different readings of the same data.
 
 ### Step 7: Update overview
 
