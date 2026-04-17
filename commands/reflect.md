@@ -81,15 +81,22 @@ For each conjecture, systematically ask:
 - What would refute it: <specific data or finding>
 - Missing data: <what we'd need> → backlog status: <in pipeline / not yet>
 
-**Recommended revision**: <keep as-is / hedge / downgrade / upgrade>
+**Recommended revision**: <UPGRADE / hold / downgrade>
 
 ### Conjecture 2: ...
 
 ### Overall assessment
-- Strongest claim: <which conjecture has the best evidential support>
-- Weakest claim: <which is most vulnerable to refutation>
+- Strongest claim (UPGRADE): <which conjecture survived stress-testing and deserves MORE confidence — name the converging evidence>
+- Weakest claim (downgrade): <which is most vulnerable to refutation>
+- Held claims: <which are reasonably supported but need more data>
 - Biggest data gap: <single highest-leverage missing dataset>
 - Recommended next action: <what to discover/ingest/query to strengthen the synthesis>
+
+### The balance
+
+**Intellectual humility does NOT mean downgrading everything.** Popper says: claims that survive attempted refutation are our BEST knowledge. If a conjecture survives reverse-causation checks, has good time-series alignment, multiple independent sources agree, and no peer-country comparator undermines it — SAY SO. Upgrade it. State that it's well-supported.
+
+A wiki where every claim is hedged into "might possibly be somewhat consistent with" is not humble — it's useless. The goal is calibrated confidence: high where the evidence is strong, low where it's weak, honest about the boundary.
 ```
 
 ### Step 5: Apply revisions to the wiki
