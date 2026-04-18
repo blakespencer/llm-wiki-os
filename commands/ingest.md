@@ -177,7 +177,7 @@ After the ingest, consider: does `wiki/CLAUDE.md` need to evolve? New page type,
 Read `wiki/backlog.md` and update:
 - If this source was in "Approved" or "Built" → move it to "Ingested" with today's date
 - If this source was NOT in the backlog (manual ingest) → add it to "Ingested"
-- Remove `status: stub` from any stub pages that were filled during this ingest
+- Remove `status: stub` from any stub pages that were filled during this ingest, AND refresh `updated: <YYYY-MM-DD>` in the same frontmatter — filling a stub is a substantive update and the date must reflect it
 - Note: the backlog is the compounding loop's memory — keep it accurate
 
 ### Step 11: Suggest what to do next
