@@ -196,12 +196,16 @@ For each approved source:
 1. Create stub pages with `status: stub` frontmatter and "Data not yet ingested — see [[backlog]]" note
 2. Add annotated cross-references from existing pages (with why-clauses)
 3. Create a synthesis page connecting the discovered topic to existing wiki content if warranted
-4. Update `wiki/overview.md` with the new gap/stub
 
-### Step 9: Update index and log
+### Step 9: Update navigation surfaces (index, overview, log)
+
+All three nav-surface files must reflect the new stubs before committing. A miss on any one leaves the wiki navigable but inconsistent.
 
 1. Update `wiki/index.md` — add stub pages (mark with *(stub)*)
-2. Full log format — pages touched, what was added, backlog entries created
+2. Update `wiki/overview.md` — add the new gap/stub so the landing narrative surfaces it
+3. Update `wiki/log.md` — full log entry: pages touched, what was added, backlog entries created
+
+Before continuing to Step 11, confirm all three files appear in `git status`.
 
 ### Step 10: Suggest what to do next
 
