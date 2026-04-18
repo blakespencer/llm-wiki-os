@@ -59,6 +59,8 @@ When fixing these: **read the page, read the relevant data, and write the missin
 - [ ] **Convention drift**: Patterns in pages not documented in schema?
 - [ ] **Overview staleness**: Does `overview.md` reflect current wiki state?
 
+**Zero-state discipline.** Every check above must produce either a concrete count with examples OR an explicit `N detected` / `none detected` line. Silent omission of a check is a lint-quality failure — a reader cannot distinguish "skipped" from "zero found." If the lint performed the check and found nothing, say so.
+
 ### Step 3: Present the report
 
 ```
@@ -140,14 +142,18 @@ Read the backlog, the wiki state, and the gaps to generate:
 3. <question motivated by a gap or contradiction discovered in this lint>
 
 #### Sources to ingest (/wiki:ingest)
-1. <highest-value item from backlog "Built" section, if any>
+1. <highest-value item from backlog "Built" section>
 2. <un-ingested ETL dataset that would enrich the most existing pages>
+
+If the "Built" section is empty, do not list "Approved" entries here — the two queues are distinct (build must precede ingest). Instead: (a) name a specific "Approved" entry with the caveat "build precedes ingest — run the ETL, then return here," OR (b) name an un-ingested ETL output that the wiki would most benefit from. Name the actual source; do not leave the bullet blank.
 
 #### Topics to discover (/wiki:discover)
 1. <topic where the wiki's answer would be weakest — worth researching online>
 
-#### Backlog status
-- Pipeline: N discovered → M approved → K built → J ingested
+#### Backlog pipeline summary (mandatory closing line)
+- `N discovered / M approved / K built / J ingested / R reflect-candidates`
+
+This line is not optional. Every Suggest-next block closes with this summary so the pipeline state is machine-parseable across lint runs. Include `reflect-candidates` count even when zero (`R=0`).
 ```
 
 ### Step 6: Update log
