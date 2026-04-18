@@ -44,6 +44,15 @@ If you find yourself (or an advisor) recommending "wait until more data lands" t
 4. Read the target synthesis page in full
 5. Read every page the synthesis page links to (datasets, events, eras, concepts)
 
+### Step 1.5: If this is a re-reflect, scope accordingly
+
+If the target page already carries `stress_tested: <date>` frontmatter and a `## Stress-tested` section, this is a re-reflect, not a first-time reflect. Adjust:
+
+- **Preserve the prior stress-test trail verbatim.** Do not rewrite the existing `## Stress-tested` section. Append a dated sub-section (e.g., `### Re-reflected YYYY-MM-DD`) that notes trigger, what changed, what survived, and what's still unfalsifiable. Losing the prior trail destroys epistemic history.
+- **Scope the seven-lens falsification to conjectures with new evidence.** Applying all seven lenses to all catalogue rows again when only one has new data is theatre. For unchanged rows, state "no new data touches this row" and move on. The Movement column captures this honestly.
+- **Textual normalisation of prior informal verdicts to controlled vocabulary is permitted** (e.g., "observation supported; causal weight contested" → `Unfalsifiable`). Mark those rows Movement: unchanged, because the epistemic claim hasn't moved — only the wording has. Be explicit in the report that this is a text-only normalisation.
+- **IDs in the hypothesis catalogue are stable.** Never rename an existing kebab-case ID on a re-reflect; downstream skills reference `<page>#<id>` and renaming silently breaks them.
+
 ### Step 2: Extract the central conjectures
 
 Read the synthesis page and identify:
@@ -119,7 +128,9 @@ A wiki where every claim is hedged into "might possibly be somewhat consistent w
 
 ### Step 5: Apply revisions to the wiki
 
-After presenting the report, ask: **"Should I apply these revisions?"**
+**STOP.** Do not write any files yet. After presenting the Step 4 stress-test report, explicitly ask: **"Should I apply these revisions?"** and **wait for explicit approval from the user** (e.g., "yes", "apply", "go ahead"). 
+
+An invocation brief that instructs you to "paste the output back" when done refers to what happens *after* revisions are applied — it is **not** pre-authorisation to run end-to-end. Invoking this skill is not pre-authorisation for the apply step. The gate exists specifically to let the user redirect based on the report before state mutates; skipping it is a silent process failure even if the substantive output is sound.
 
 If approved:
 - **Set `stress_tested: <YYYY-MM-DD>` in the page frontmatter (REQUIRED).** This is the machine-checkable marker downstream skills (e.g., `/story-map:integrate`) read before consuming a synthesis.
@@ -141,7 +152,7 @@ If approved:
   - **Unfalsifiable** — cannot currently be tested with available data
 
   The `ID` column is a stable kebab-case slug derived from the hypothesis, so downstream skills can reference a specific row by `<page>#<id>` (e.g., `why-uk-building-costs-high#materials-inflation-not-primary`).
-- **Disperse findings** — update any pages that cited the original claim (era pages, concept pages)
+- **Disperse findings** — update any pages that cited the original claim (era pages, concept pages). **When Movement = UPGRADED or DOWNGRADED on a catalogue row, enumerate sibling synthesis pages that own the same or related claim and update them in the same commit as the primary page.** Example: a mechanism-level UPGRADE to `materials-inflation-not-primary` on `why-uk-building-costs-high` should also land a corroborating paragraph on `construction-prices-vs-cpi`, which owns the aggregate version of the same finding. A dispersal edit that only happens as a follow-up commit (because a scorecard caught it) is a missed opportunity to keep wiki state coherent.
 - **Create a question page** if the stress-test produced a substantial analysis worth preserving
 - **Add new backlog entries** for any data gaps identified that aren't already in the pipeline
 - **Update the Popperian caveat** to be specific about what's been tested and what hasn't
