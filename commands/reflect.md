@@ -41,8 +41,9 @@ If you find yourself (or an advisor) recommending "wait until more data lands" t
 1. Read `wiki/CLAUDE.md` — refresh on the philosophical framework, source epistemology, "single-answer analysis is always wrong"
 2. Read `wiki/frameworks/` — all framework pages (needed for lens-based stress-testing)
 3. Read `wiki/backlog.md` — what's already in the pipeline
-4. Read the target synthesis page in full
-5. Read every page the synthesis page links to (datasets, events, eras, concepts)
+4. Read `wiki/backlog.md`'s `## Reflect candidates` section specifically — **entries matching the target synthesis page are automatic candidates to examine in this run.** Each entry names a calibration finding surfaced by a prior ingest or score that was parked for future reflect. If this reflect addresses a candidate (by splitting a conjecture, confirming an aggregate-only framing, or otherwise calibrating), the entry gets closed in Step 5.
+5. Read the target synthesis page in full
+6. Read every page the synthesis page links to (datasets, events, eras, concepts)
 
 ### Step 1.5: If this is a re-reflect, scope accordingly
 
@@ -152,6 +153,7 @@ If approved:
   - **Unfalsifiable** — cannot currently be tested with available data
 
   The `ID` column is a stable kebab-case slug derived from the hypothesis, so downstream skills can reference a specific row by `<page>#<id>` (e.g., `why-uk-building-costs-high#materials-inflation-not-primary`).
+- **Close addressed Reflect candidates** — for each entry in `wiki/backlog.md`'s `## Reflect candidates` section that this reflect addressed, either delete the entry outright (if fully resolved) or update its "Close when" clause to reflect partial progress. Entries that this reflect did NOT address stay in place for future reflects.
 - **Disperse findings** — update any pages that cited the original claim (era pages, concept pages). **When Movement = UPGRADED or DOWNGRADED on a catalogue row, enumerate sibling synthesis pages that own the same or related claim and update them in the same commit as the primary page.** Example: a mechanism-level UPGRADE to `materials-inflation-not-primary` on `why-uk-building-costs-high` should also land a corroborating paragraph on `construction-prices-vs-cpi`, which owns the aggregate version of the same finding. A dispersal edit that only happens as a follow-up commit (because a scorecard caught it) is a missed opportunity to keep wiki state coherent.
 - **Create a question page** if the stress-test produced a substantial analysis worth preserving
 - **Add new backlog entries** for any data gaps identified that aren't already in the pipeline
