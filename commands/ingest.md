@@ -119,6 +119,9 @@ After user approval:
 - Write cross-temporal facts as natural prose, not just link lists
 - Update frontmatter `updated` date and `datasets` array
 
+**Frontmatter boundary — do NOT set `stress_tested:`.**
+That marker is set by `/wiki:reflect` when it applies revisions, per the wiki↔story-map seam contract (`thoughts/architecture/operating-manual.md`). It is the precondition `/story-map:integrate` checks to decide whether a synthesis page is consumable — mechanically distinguishing "reflected" from merely "re-ingested." An ingest that touches a previously-stress-tested page MUST refresh `updated:` but MUST NOT add, refresh, or otherwise touch `stress_tested:`. If the ingest's additions materially affect a stress-tested conjecture, file a Reflect candidate in `wiki/backlog.md` (see Step 11) rather than self-refreshing the seam marker. Observed violation: 2026-04-19 `/wiki:ingest energy-prices` (wiki commit `797253b`) set `stress_tested: 2026-04-19` on three pages — reverted in follow-up because ingest is not authorised to set that field.
+
 **Cross-reference rules (no bare links):**
 Every `[[wikilink]]` must have a why-clause — a phrase explaining why the connection matters. Never write bare `- [[page]]`. Always write `- [[page]] — <why this connection is relevant>`.
 
