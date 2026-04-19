@@ -49,10 +49,11 @@ Expected row format (era page): same grammar; rows may reference other ground-tr
 - Dataset pages: this is a schema violation. Flag for Step 8's schema-health report. Audit downstream pages against the JSON directly for now; do not use the un-sourced page as an authority.
 - Era pages: same — schema violation. Flag and fall back to the cited dataset pages' rows during the audit.
 
-**Row-ID integrity checks during parsing:**
-- Every row ID must follow `<page-slug>.<identifier>` grammar with the page-slug matching the page's filename.
+**Row-ID integrity checks during parsing** (grammar per `wiki/CLAUDE.md` Ground-truth-sections convention):
+- Every row ID must start with `<page-slug>.` where `<page-slug>` matches the page's filename without extension.
+- The identifier portion (after the first dot) is kebab-case and MAY contain additional dots for semantic grouping (e.g., `thatcher-1979.gilts.peak` is a valid era-page row where `gilts.peak` is a dotted identifier).
 - IDs must be unique within the page.
-- Duplicate or malformed IDs → schema violation; flag and halt downstream audit on that page until resolved.
+- Duplicate IDs, IDs that don't begin with the page slug, or IDs with malformed characters → schema violation. Flag and halt downstream audit on that page until resolved.
 
 ### Step 3: Enumerate pages by audit priority
 
@@ -83,10 +84,12 @@ For each page in priority order:
 
    Extraction method: LLM pass with structured output. Prefer precision over recall — a missed claim is an un-audited claim; a false-positive claim extraction is extra work but not an error. Err toward missed-extraction only when the prose is truly ambiguous.
 
-3. For each extracted claim, check for explicit external marking:
-   - Inline: `(external claim; ...)` or `*(external)*` qualifier in the same sentence
-   - Sectioned: already handled by skipping `### External context` sections in Step 4.1
-   - If marked: classify EXOGENOUS, move on.
+3. For each extracted claim, check for explicit external marking per `wiki/CLAUDE.md`'s External-claims convention (three accepted syntaxes):
+   - Inline parenthetical: `(external claim; <optional source>)` in the same sentence. The `external claim` keyword is required for disambiguation.
+   - Inline short-form: `*(external)*` trailing italic qualifier in the same sentence.
+   - Sectioned: `### External context` — already handled by skipping such sections at Step 4.1.
+   - If any accepted marker is present: classify EXOGENOUS, record the claim and marker form, move on.
+   - **Not accepted** (these do NOT mark the claim external; the audit treats them as unmarked): bare parenthetical without the `external claim` keyword, freestanding italic text, footnote references (`[^1]`).
 
 ### Step 5: Verify each non-external claim
 
