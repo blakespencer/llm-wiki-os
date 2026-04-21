@@ -9,6 +9,7 @@ Related blueprints:
 - `cleaning-gates.md` — `/wiki:reflect` (epistemic-honesty gate) is where the philosophical framework gets exercised against real claims
 - `source-epistemology.md` — applies the Popperian ceiling to the *input* layer (data sources) rather than only the output layer (interpretations)
 - `pipeline-composition.md` — the framework governs what synthesis pages look like at the end of Pipeline 1
+- `data-quality-discontinuities.md` — the ceiling's *"surface disagreement between data sources"* mandate manifests concretely in splice/coverage/overlap documentation
 
 Related skills: `llm-wiki-os/commands/{ingest,query,reflect}.md` (these read `wiki/CLAUDE.md` to apply the project's specific framework).
 

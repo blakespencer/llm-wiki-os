@@ -8,6 +8,7 @@ Related blueprints:
 - `karpathy-fidelity.md` — write-time correctness for claims the wiki authors. Source epistemology is its complement at the *input* side (before a claim is authored).
 - `philosophical-framework.md` — the Popperian ceiling applies to every interpretation AND every source.
 - `data-quality-discontinuities.md` — the three data-issue categories (splice / coverage / overlap) are where source epistemology manifests in specific dataset pages.
+- `cleaning-gates.md` — source epistemology fires at `/wiki:discover` (accepting a source) and `/wiki:ingest` (absorbing it); the cleaning gates fire post-ingest to catch what source-epistemology couldn't prevent.
 
 Related skills: `llm-wiki-os/commands/{discover,ingest}.md` — discover proposes new sources; ingest applies source epistemology when absorbing data.
 

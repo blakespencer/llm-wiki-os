@@ -8,6 +8,7 @@ Related blueprints:
 - `karpathy-fidelity.md` — claim-level fidelity; this blueprint is its complement at the data-quality-documentation layer
 - `source-epistemology.md` — source-level skepticism; data-quality discontinuities are where source decisions (splicing, coverage choices) become visible in the dataset
 - `cleaning-gates.md` — `/wiki:lint` should flag dataset pages missing required discontinuity sections
+- `philosophical-framework.md` — the ceiling's *"surface disagreement between data sources"* mandate manifests as the overlap-divergence category here; splice and coverage categories implement the ceiling's honesty-about-limits requirement
 
 Related skills: `llm-wiki-os/commands/{ingest,lint,audit}.md` — ingest authors the sections; lint flags missing sections; audit uses them to interpret claims correctly.
 

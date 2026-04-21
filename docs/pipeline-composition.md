@@ -8,6 +8,8 @@ Related blueprints:
 - `cleaning-gates.md` — the four cleaning agents inside Pipeline 1 (`/wiki:lint` → `/wiki:audit` → `/wiki:reflect` → `/wiki:coherence`)
 - `karpathy-fidelity.md` — the write-time correctness invariant that makes Pipeline 1's output trustworthy as input to Pipeline 2
 - `prompt-engineering.md` — the iteration methodology applied to every skill in every pipeline
+- `philosophical-framework.md` — the ground/ceiling/lenses scaffold Pipeline 1's synthesis pages apply at their epistemic layer
+- `planning-discipline.md` — Pipeline 3's `<plan>` step is where this discipline applies most directly; reconnaissance depth scales with assumption density at every pipeline step that depends on external authorities
 
 Related skills: `llm-wiki-os/commands/*` (Pipeline 1 skills).
 
@@ -26,15 +28,19 @@ Each pipeline's output is the next pipeline's input. **Side effects from any loo
 ## Pipeline 1: Data quality (the wiki)
 
 ```
-/wiki:discover → /wiki:ingest (authors synthesis) → /wiki:audit → /wiki:reflect
-                                                                      ↓
-                                                      upgrade/downgrade/hold
-                                                                      ↓
+/wiki:lint (structural precondition)
+     │
+     ▼
+/wiki:discover → /wiki:ingest (authors synthesis) → /wiki:audit → /wiki:reflect → /wiki:coherence (planned)
+                                                                                      ↓
+                                                                upgrade/downgrade/hold + internal-consistency check
+                                                                                      ↓
                                                      verified findings (figures_verified:
-                                                     + stress_tested: frontmatter)
+                                                     + stress_tested: + coherent_as_of: [planned]
+                                                     frontmatter markers)
 ```
 
-(Synthesis pages are authored during `/wiki:ingest` as part of dispersal; `/wiki:audit` then verifies their numeric claims against ground-truth tables; `/wiki:reflect` stress-tests their causal conjectures. The dependency chain matches `cleaning-gates.md` canonical order: structural lint → claim audit → epistemic reflect.)
+(Synthesis pages are authored during `/wiki:ingest` as part of dispersal; `/wiki:audit` verifies their numeric claims against ground-truth tables; `/wiki:reflect` stress-tests their causal conjectures; `/wiki:coherence` — planned — checks internal consistency. `/wiki:lint` runs as a structural precondition for the whole chain. The dependency chain matches `cleaning-gates.md` canonical order: `lint → audit → reflect → coherence`. When `/wiki:coherence` ships, the handoff contract to Pipeline 2 extends from 2 markers (`figures_verified:` + `stress_tested:`) to 3 (adding `coherent_as_of:`).)
 
 **Output**: synthesis pages with stress-tested conjectures, calibrated confidence levels, `### Stress-tested` sections, and `figures_verified:` / `stress_tested:` frontmatter markers that downstream consumers gate on.
 
@@ -149,7 +155,7 @@ The loop-closing step is often the weakest — many projects ship artifacts, nev
 ## Non-goals (explicit scope boundaries)
 
 - **Don't collapse the three pipelines into one "do everything" pipeline.** The separation is what enables cleaning gates (Pipeline 1), hypothesis discipline (Pipeline 2), and plan/implement discipline (Pipeline 3) — each a different abstraction.
-- **Don't skip the handoff contracts.** A synthesis page without `stress_tested:` + `figures_verified:` is not consumable by Pipeline 2 mechanically. Letting Pipeline 2 "just read" the synthesis with no precondition means the first error in the wiki silently propagates through strategy and implementation.
+- **Don't skip the handoff contracts.** A synthesis page without `stress_tested:` + `figures_verified:` is not consumable by Pipeline 2 mechanically. Letting Pipeline 2 "just read" the synthesis with no precondition means the first error in the wiki silently propagates through strategy and implementation. (When `/wiki:coherence` ships, `coherent_as_of:` becomes a third mandatory marker on pages that pass internal-consistency check — see `cleaning-gates.md` for the four-gate model's frontmatter-marker contract.)
 - **Don't build Pipeline 2 before Pipeline 1 has produced at least one verified synthesis.** Without verified findings to integrate, Pipeline 2's integrate skill has no input; the methodology becomes ungrounded.
 - **Don't claim the pipeline composition is a hierarchy.** It's a cycle. Pipeline 1 depends on Pipeline 3's feedback as much as Pipeline 3 depends on Pipeline 1's output. "Upstream" and "downstream" in any single turn become the opposite in the next turn.
 

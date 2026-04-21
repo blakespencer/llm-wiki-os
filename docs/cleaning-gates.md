@@ -7,7 +7,9 @@ Strategic model for keeping a Karpathy-pattern wiki high-fidelity over time. Dis
 Related blueprints:
 - `karpathy-fidelity.md` — diagnosis of the write-time correctness invariant that `/wiki:audit` (the second gate) exists to enforce
 - `prompt-engineering.md` — the skill-iteration methodology that governs how gates evolve and how overlays propose elevations
-- `pipeline-composition.md` — the three-pipeline composition model; the cleaning gates produce the `figures_verified:` + `stress_tested:` frontmatter markers that Pipeline 2 consumers gate on
+- `pipeline-composition.md` — the three-pipeline composition model; the cleaning gates produce the `figures_verified:` + `stress_tested:` + `coherent_as_of:` frontmatter markers that Pipeline 2 consumers gate on
+- `source-epistemology.md` — source-level skepticism fires during `/wiki:discover` and `/wiki:ingest`; cleaning gates fire after ingest to catch what source epistemology couldn't prevent
+- `data-quality-discontinuities.md` — `/wiki:lint` flags dataset pages missing required discontinuity sections (splice / coverage / overlap); the three categories feed into audit verdicts ("all-time X" claims hinge on documented coverage range)
 
 Related skills: `llm-wiki-os/commands/lint.md`, `audit.md`, `reflect.md`, and a planned `coherence.md`.
 

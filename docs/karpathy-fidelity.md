@@ -8,6 +8,9 @@ Related blueprints:
 - `cleaning-gates.md` — the four-gate model (`/wiki:lint` → `/wiki:audit` → `/wiki:reflect` → `/wiki:coherence`) that enforces this invariant at run-time
 - `prompt-engineering.md` — the skill-iteration methodology and N=2 codification rule that governs how blueprints evolve
 - `pipeline-composition.md` — the three-pipeline composition model whose Pipeline 1 → Pipeline 2 handoff contract depends on the `figures_verified:` + `stress_tested:` frontmatter markers diagnosed here
+- `philosophical-framework.md` — the Popperian ceiling that makes fidelity an invariant rather than an optional discipline (*"every claim is a conjecture, but conjectures still have to match the data they cite"*)
+- `source-epistemology.md` — the input-side complement; source epistemology calibrates what enters the wiki, this blueprint calibrates how claims authored on top of it get verified
+- `data-quality-discontinuities.md` — where splice / coverage / overlap discontinuities are documented; claims about "all-time X" depend on those documentations being present
 
 Related skills: `llm-wiki-os/commands/audit.md` — the specific skill file that enforces the contract this blueprint diagnoses.
 
