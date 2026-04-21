@@ -82,7 +82,9 @@ For each page in priority order:
    - **Coordinates** — optional date, era, or event anchor (e.g., "in Nov 1979", "during Thatcher")
    - **Citation** — optional `[[page#row-id]]` link or `[[page]]` reference
 
-   Extraction method: LLM pass with structured output. Prefer precision over recall — a missed claim is an un-audited claim; a false-positive claim extraction is extra work but not an error. Err toward missed-extraction only when the prose is truly ambiguous.
+   Extraction method: LLM pass with **structured output mandatory** — produce one row per claim matching the shape `{page, line, subject, value, coord, citation, verdict, verdict_sub_class, marker_form}` or equivalent. Do NOT produce free-form prose in the extraction step; structured rows are required so a post-processing check can enforce `total_claims == sum(verdicts_by_class) + syntax_flagged_count`. Arithmetic drift (running-tally mismatches in Step 6 reports) is a failure mode the structured-output requirement exists to prevent. Codified 2026-04-21 after 2026-04-20 /wiki:audit runs had persistent tally drift (24-vs-31 partial, 30-vs-33 complete) across both runs.
+
+   Prefer precision over recall — a missed claim is an un-audited claim; a false-positive claim extraction is extra work but not an error. Err toward missed-extraction only when the prose is truly ambiguous.
 
 3. For each extracted claim, check for explicit external marking per `wiki/CLAUDE.md`'s External-claims convention (three accepted syntaxes):
    - Inline parenthetical: `(external claim; <optional source>)` in the same sentence. The `external claim` keyword is required for disambiguation.
@@ -90,6 +92,8 @@ For each page in priority order:
    - Sectioned: `### External context` — already handled by skipping such sections at Step 4.1.
    - If any accepted marker is present: classify EXOGENOUS, record the claim and marker form, move on.
    - **Not accepted** (these do NOT mark the claim external; the audit treats them as unmarked): bare parenthetical without the `external claim` keyword, freestanding italic text, footnote references (`[^1]`).
+
+4. For claims with *apparent external intent but non-canonical marker syntax* (e.g., em-dash "— external claim; …", "widely reported", "by various sources", "*not in our dataset*"), classify as **SYNTAX-FLAGGED** — a fourth bucket distinct from EXOGENOUS and UNVERIFIABLE. These claims are *probably* external but the author didn't use an accepted syntax; the audit surfaces them to Step 9's schema-health report with a `marker_migration_candidates:` flag. Do NOT auto-convert to UNVERIFIABLE (would trigger a false CONTRADICTED cascade); do NOT auto-convert to EXOGENOUS (would silently accept intent-over-syntax, undermining the convention). The 4th bucket is the audit's honest "this looks external but wasn't marked right — human, migrate the syntax." Codified 2026-04-21 after 2026-04-20 /wiki:audit N=1 run improvised this category (present in 4 target-page claims); promoted from executor-discretionary to skill-mandated.
 
 ### Step 5: Verify each non-external claim
 
@@ -191,16 +195,27 @@ Ask the user which categories to fix in this pass. Then apply:
 
 ### Step 8: Update `figures_verified:` frontmatter
 
-For every page that has **zero CONTRADICTED and zero UNVERIFIABLE claims** remaining after Step 7:
+**Strict semantics (default).** For every page that has **zero CONTRADICTED and zero UNVERIFIABLE claims** remaining after Step 7:
 - Set `figures_verified: <today's ISO date>` in frontmatter.
 - If the field was missing, add it.
 - If the field was present and older: update it.
 
-For pages with remaining unresolved claims, leave `figures_verified:` unchanged (may be absent, or may hold a prior clean date — leave it so downstream consumers know this audit did not re-certify).
+For pages with remaining unresolved claims, leave `figures_verified:` unchanged. The field's contract is "this page is claim-level clean as of this date"; bumping it while UNVERIFIABLE claims remain silently over-promises downstream consumers.
 
-### Step 9: Schema health report
+**Scoped-approval exception** (codified 2026-04-21). When the user explicitly scopes Step 7 approval to frontmatter-canonicalisation only (e.g., migrating non-canonical `audited:` → canonical `figures_verified:`) without resolving prose-level UNVERIFIABLE claims, bump `figures_verified:` ONLY if you simultaneously add a `figures_verified_scope:` frontmatter field documenting the narrow scope:
 
-Surface the structural issues for follow-up (these are `/wiki-lint` adjacent but first-surfaced during audit):
+```yaml
+figures_verified: 2026-04-20
+figures_verified_scope: "schema-field canonicalisation only; N UNVERIFIABLE prose claims deferred"
+```
+
+Downstream consumers (including future `/wiki:audit` runs) MUST check `figures_verified_scope:` when present and treat the page as not-claim-level-certified. Without the scope field, never bump `figures_verified:` when UNVERIFIABLE claims remain — strict wins by default.
+
+### Step 9: Schema health report — surface INLINE with the Step 6 verdicts
+
+Surface the structural issues for follow-up (these are `/wiki-lint` adjacent but first-surfaced during audit). **Placement: inline with the Step 6 verdict report, NOT as a separate post-resolution block.** Codified 2026-04-21 after 2026-04-20 /wiki:audit N=1 run demonstrated that users need schema-health signals to choose Step 7 resolutions intelligently — a post-resolution block arrives too late.
+
+Schema-health section shape (renders directly below the verdict counts in Step 6):
 
 ```
 ### Schema health — fidelity layer
@@ -208,6 +223,8 @@ Surface the structural issues for follow-up (these are `/wiki-lint` adjacent but
 - Era pages missing ## Ground truth: <count> (list)
 - Pages without correctness_grade: <count> (default assumed by page type)
 - Pages with stale figures_verified (cited dataset re-ingested after verification): <count>
+- Pages with `figures_verified_scope:` (narrow-scope re-certifications pending full audit): <count>
+- External-claim syntax-migration candidates (SYNTAX-FLAGGED bucket from Step 5): <count>
 - External-claim markers missing where expected: <count> (approximate — flagged at Step 5 Case C rejections)
 ```
 
@@ -237,16 +254,33 @@ If any of these are non-zero, propose a follow-up pass to remediate. Do NOT fix 
 
 ### Step 11: Update log
 
-Append to `wiki/log.md`:
+Append to `wiki/log.md`. **Word ceiling: ~200 words.** Dense narrative is fine below that ceiling; above it, move detail to the audit file or a companion note. Required components (cannot be omitted, even on short runs):
+
+- Date header `## [YYYY-MM-DD] audit | <scope>`
+- Claims audited count (total + per-verdict-class, reconciled — running tally must match total)
+- Verdicts: V verified / C contradicted / U unverifiable (B broken-citation + F no-canonical-fact + X uncited) / E exogenous / S syntax-flagged
+- Resolutions applied this pass (short description)
+- Remaining unresolved (short description)
+- Schema violations surfaced (dataset + era pages missing ground-truth, syntax-migration candidates, stale figures_verified)
+- Pages with `figures_verified:` updated (list)
+- Pages with `figures_verified_scope:` added (list, if any)
+- Created: 0 (audit doesn't create new pages). Updated: P.
+- Pages: <comma-separated>
+
+Template:
 
 ```
 ## [YYYY-MM-DD] audit | <scope>
 
-Audited N claims across M pages. Verdicts: V verified / C contradicted / U unverifiable (B broken-citation + F no-canonical-fact + X uncited) / E exogenous. Resolved R this pass: <short description>. Remaining: <short description>. Schema violations surfaced: G dataset pages missing ground-truth, H era pages missing ground-truth.
-Pages with figures_verified updated: <list>.
-Created: 0 (audit doesn't create new pages). Updated: P.
+Audited N claims across M pages. Verdicts: V verified / C contradicted / U unverifiable (B broken-citation + F no-canonical-fact + X uncited) / E exogenous / S syntax-flagged. Reconciled: V+C+U+E+S = N ✓ (no tally drift).
+Resolved this pass: <short description>. Remaining: <short description>.
+Schema violations: G dataset pages missing ground-truth, H era pages missing ground-truth, I syntax-migration candidates, J stale figures_verified.
+Pages with figures_verified updated: <list>. figures_verified_scope added: <list or "none">.
+Created: 0. Updated: P.
 Pages: <comma-separated>
 ```
+
+Codified 2026-04-21 after 2026-04-20 N=1 run produced a ~500-word paragraph-form entry that drifted from the template's terse ideal.
 
 ### Step 12: Commit
 
