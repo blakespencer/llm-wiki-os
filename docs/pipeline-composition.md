@@ -26,13 +26,15 @@ Each pipeline's output is the next pipeline's input. **Side effects from any loo
 ## Pipeline 1: Data quality (the wiki)
 
 ```
-/wiki:discover → /wiki:ingest → synthesis created → /wiki:audit → /wiki:reflect
+/wiki:discover → /wiki:ingest (authors synthesis) → /wiki:audit → /wiki:reflect
                                                                       ↓
                                                       upgrade/downgrade/hold
                                                                       ↓
                                                      verified findings (figures_verified:
                                                      + stress_tested: frontmatter)
 ```
+
+(Synthesis pages are authored during `/wiki:ingest` as part of dispersal; `/wiki:audit` then verifies their numeric claims against ground-truth tables; `/wiki:reflect` stress-tests their causal conjectures. The dependency chain matches `cleaning-gates.md` canonical order: structural lint → claim audit → epistemic reflect.)
 
 **Output**: synthesis pages with stress-tested conjectures, calibrated confidence levels, `### Stress-tested` sections, and `figures_verified:` / `stress_tested:` frontmatter markers that downstream consumers gate on.
 
@@ -51,7 +53,7 @@ Pipeline 2's shape depends on which product-strategy methodology the project use
 - **`<discover>`**: find gaps in the current product/research/output by walking the methodology's primary abstraction (personas, jobs, stakeholders, research questions)
 - **`<integrate>`**: take a verified finding from Pipeline 1 (a synthesis page with `stress_tested: <date>` + `figures_verified: <date>`), map it to the methodology's structure, produce a work item with a hypothesis
 - **`<plan>`**: slice work items into releases/milestones/campaigns with explicit hypotheses
-- **`<validate>`**: post-ship, test whether the hypothesis held (20/60/20 verdict shapes are common: validated / learned / wrong)
+- **`<validate>`**: post-ship, test whether the hypothesis held. Projects use different verdict vocabularies — some split outcomes into three tiers (validated / learned / wrong), others use richer scales; the pipeline shape doesn't mandate a specific vocabulary, only that post-ship validation produces a verdict that can feed back into Pipelines 1 and 2.
 - **`<audit>`**: periodic self-critique against the methodology's own principles to catch staleness, coverage gaps, hygiene issues
 
 **Output**: prioritized work items (GitHub issues, tickets, research briefs) with explicit hypotheses + acceptance criteria. Each item traces back to a Pipeline 1 verified finding.
@@ -112,7 +114,7 @@ Not in `llm-wiki-os` (generic wiki kit — domain-agnostic). Not in the wiki con
 The seam needs to be checkable in code, not left to "the human remembers which findings are verified." Two contracts:
 
 - **Frontmatter marker on the synthesis page**: `stress_tested: <ISO-date>` (and/or `figures_verified: <ISO-date>`) set by the corresponding cleaning agent. Missing = Pipeline 2's integrate skill refuses to run.
-- **Hypothesis catalogue with stable IDs**: controlled vocabulary for verdicts (UPGRADED / Supported / Supported-with-caveat / Hold / DOWNGRADED / Not-supported / Unfalsifiable). Pipeline 2 integrate is invoked as `<skill> <synthesis-page>#<conjecture-id>` and quotes the cited row's verdict + evidence for traceability.
+- **Hypothesis catalogue with stable IDs**: each synthesis page's conjectures are enumerated as rows with kebab-case IDs. Each row carries a verdict drawn from a **controlled vocabulary** (the specific enum is project-specific — see your project's overlay for the exact list). Pipeline 2 integrate is invoked as `<skill> <synthesis-page>#<conjecture-id>` and quotes the cited row's verdict + evidence for traceability.
 
 Without these contracts the handoff rots — projects without them accumulate "verified findings" that are verified by informal memory, not by checkable precondition. Full design rationale in `karpathy-fidelity.md` (frontmatter contracts section).
 
@@ -126,15 +128,13 @@ Pipeline 2 needs persistent state: personas (or their methodology-equivalent), b
 
 Reference implementations tend to pick the third option. The blueprint doesn't prescribe — but the question must be answered explicitly, not drifted into.
 
-### 4. How do Pipeline 1 and Pipeline 2 discovery skills relate?
+### 4. Do you need a separate "conjecture" skill, or is synthesis creation the conjecture production step?
 
-Both pipelines have a `<discover>` step but with different purposes:
-- **`/wiki:discover`** — finds gaps in the *knowledge* (what do we not know?)
-- **`<product-strategy>:discover`** — finds gaps in the *product* (what user needs aren't served?)
+Projects bootstrapping this pipeline sometimes ask whether they need a dedicated skill (e.g., `/wiki:conjecture`) separate from `/wiki:ingest`'s synthesis-creation behavior. The answer for most projects: **no — synthesis creation IS the conjecture production step**. Splitting them adds a coordination surface without adding capability; the Pipeline 1 skill chain already covers it (discover finds gaps → ingest authors synthesis → audit verifies figures → reflect stress-tests conjectures).
 
-They can feed each other: a product-strategy gap may reveal a knowledge gap; a knowledge gap may reveal that a product assumption is unverified. But they are distinct skills with distinct preconditions (knowledge-discover reads `wiki/backlog.md`; product-strategy-discover reads the persona/backbone/release state).
+The exception: if a project treats "conjecture" as a distinct artifact class from "synthesis" (e.g., conjectures are lightweight hypotheses without data attached; syntheses are fully cited narratives), a separate skill may be justified. In practice this is rare — the synthesis page pattern with a hypothesis-catalogue section already carries both the narrative and the extractable conjectures.
 
-Projects that conflate the two end up with one skill trying to do both jobs and doing neither well.
+Related but distinct: **Pipeline 1's `<discover>` vs Pipeline 2's `<discover>`**. Both pipelines have a `<discover>` step but with different purposes — Pipeline 1's finds knowledge gaps (what do we not know?); Pipeline 2's finds product gaps (what user needs aren't served?). They can feed each other but remain distinct skills with distinct preconditions. Projects that conflate the two end up with one skill trying to do both jobs and doing neither well.
 
 ### 5. What's the feedback loop from Pipeline 3 back to Pipeline 1?
 
