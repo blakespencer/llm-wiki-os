@@ -52,14 +52,25 @@ Health-check the wiki, fix issues, and **suggest what to investigate next**. Lin
 - [ ] **Single-answer violation**: Any page that presents one clean explanation without alternatives violates the core principle. Read each synthesis, era, and event page — does it present multiple interpretations or just one narrative?
 - [ ] **Bare wikilinks**: Any `- [[page]]` without a why-clause in a Cross-references or Connections section.
 
+**Fidelity-layer compliance (per wiki/CLAUDE.md Ground-truth / Correctness-grade / External-claims sections):**
+- [ ] **Missing `## Ground truth` section** on dataset pages — schema-mandatory. Flag every dataset page lacking one as a retrofit candidate.
+- [ ] **Missing `## Ground truth` section** on era pages — schema-mandatory (era pages consolidate claims from multiple datasets). Flag every era page lacking one.
+- [ ] **Missing `correctness_grade:` frontmatter** — required on dataset and era pages at minimum. Default for synthesis is `interpretive` but should be explicit.
+- [ ] **Stale `figures_verified:` frontmatter** — flag pages whose cited dataset has been re-ingested (wiki commit on the dataset page is newer than the page's `figures_verified:` date). These need re-audit via `/wiki:audit`.
+- [ ] **Malformed ground-truth row IDs** — every row ID must start with `<page-slug>.` matching the page's filename. Duplicate IDs within a page = schema violation. Report counts and target-page list.
+
 When fixing these: **read the page, read the relevant data, and write the missing section.** Don't just flag — fix. For source assessments, apply the 7 questions. For lenses, read `wiki/frameworks/` and apply what fits. For Popperian caveats, add one that's specific to the page's content, not generic.
+
+**Divergence-surfacing discipline (per 2026-04-20 /wiki:lint retrofit emergent observations, now contract):**
+- Where prose and data diverge during fixing (e.g., a stat-card's prose claims 5.4× growth but JSON shows 4.2×), **flag the divergence as a Ground-truth row marked for `/wiki:audit`** — do NOT silently patch the prose in this lint pass. Silent patching loses the investigation trail; `/wiki:audit` is the right venue for figure-level resolution.
+- Where the cited JSON does not contain a value the prose references (external claim), **mark the claim with `(external claim; <backlog-entry>)` syntax** per wiki/CLAUDE.md's External-claims convention — do NOT fabricate a ground-truth row from the prose value. Fabrication hides coverage gaps the author needs to see.
 
 **Schema health:**
 - [ ] **Page type coverage**: All types in CLAUDE.md actually used?
 - [ ] **Convention drift**: Patterns in pages not documented in schema?
 - [ ] **Overview staleness**: Does `overview.md` reflect current wiki state?
 
-**Zero-state discipline.** Every check above must produce either a concrete count with examples OR an explicit `N detected` / `none detected` line. Silent omission of a check is a lint-quality failure — a reader cannot distinguish "skipped" from "zero found." If the lint performed the check and found nothing, say so.
+**Zero-state discipline.** **Every bullet in every checklist above renders a line in the report — a concrete count (with examples where possible) OR an explicit `N detected` / `none detected` line. Silent omission of any listed bullet is a failure mode.** A reader cannot distinguish "skipped" from "zero found"; the fidelity layer exists because that distinction is load-bearing for downstream consumers. Sharpened from the looser phrasing in `c321f38` after 2026-04-20 runs still produced silent omissions for one-way-links and frontmatter-missing-fields despite the earlier rule existing.
 
 ### Step 3: Present the report
 
@@ -122,7 +133,29 @@ Flag:
 
 ### Step 5: Fix issues
 
-Ask the user which severity levels to fix. Then apply fixes.
+**HARD FAIL if this step auto-applies without user approval.**
+
+Pause with a numbered list of the severity levels this run found non-empty. For each option, include a one-line scope preview naming the pages-touched count and the risk type. Accept any combination of options — users scope the fix pass by which verdict classes they want resolved.
+
+Template:
+
+```
+Which severity levels do you want me to fix?
+
+(a) Critical only — <one-line scope>. N pages touched. Risk: <type>.
+(b) Important only — <one-line scope>. M pages touched. Risk: <type>.
+(c) Quality only — <one-line scope>. K pages touched. Risk: <type>.
+(d) Data quality only — <one-line scope>. J pages touched. Risk: <type>.
+(e) Fidelity-layer only — <one-line scope>. L pages touched. Risk: <type>.
+(f) All of the above.
+(g) Nothing — zero-fix exit.
+```
+
+Only render options whose severity class had non-zero findings in Step 3. Empty classes get collapsed (no "(z) Nothing to fix in Quality"). If all classes are zero, the run exits cleanly without prompting — skip to Step 6 log with zero fixes.
+
+After user picks: apply only the authorized classes. Do not fold unauthorized fixes into an authorized class silently.
+
+Codified 2026-04-21 from the 2026-04-20 /wiki:lint run pattern (N=2 across runs) per `thoughts/notes/day-plan-2026-04-21.md` Step 2 guidance.
 
 ### Step 6: Suggest next questions
 
