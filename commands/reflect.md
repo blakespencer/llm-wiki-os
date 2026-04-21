@@ -54,6 +54,41 @@ If the target page already carries `stress_tested: <date>` frontmatter and a `##
 - **Textual normalisation of prior informal verdicts to controlled vocabulary is permitted** (e.g., "observation supported; causal weight contested" → `Unfalsifiable`). Mark those rows Movement: unchanged, because the epistemic claim hasn't moved — only the wording has. Be explicit in the report that this is a text-only normalisation.
 - **IDs in the hypothesis catalogue are stable.** Never rename an existing kebab-case ID on a re-reflect; downstream skills reference `<page>#<id>` and renaming silently breaks them.
 
+### Step 1.6: Precondition — refuse on stale/absent `figures_verified:` on cited datasets
+
+**Refuse to run if any cited dataset page has missing or stale `figures_verified:` frontmatter.** Reflect's seven-lens falsification stress-tests conjectures against the figures those conjectures depend on. If the figures haven't been verified — or were verified before the dataset's last commit — any verdict movement (UPGRADE / DOWNGRADE) rests on numbers that could be wrong. Per `thoughts/architecture/wiki-cleaning-gates.md` §Observed improvements (2), reflect depends on audit: audit first, then reflect.
+
+**Staleness rule:** a dataset page's `figures_verified:` is stale when the page has been committed *after* the verification date (`git log -1 --format=%cs -- <path>` on the wiki repo returns a date later than the page's `figures_verified:` value). Absent `figures_verified:` frontmatter on a cited dataset page = stale.
+
+**For each dataset page cited from the target synthesis page** (the set gathered in Step 1 step 6):
+1. Read the page's frontmatter.
+2. Extract `figures_verified: <YYYY-MM-DD>` if present.
+3. Compare against the dataset page's last commit date.
+4. If missing OR commit date > verification date → stale.
+
+**If any cited dataset is stale or missing `figures_verified:`, halt with:**
+
+```
+REFUSE: cannot stress-test <synthesis-path> — cited dataset(s) have unverified figures.
+
+Stale / absent `figures_verified:`:
+  - <dataset-path-1>: <absent | verified YYYY-MM-DD, page committed YYYY-MM-DD>
+  - <dataset-path-2>: ...
+
+Audit cited datasets first via `/wiki:audit <dataset-page>`.
+```
+
+Do not proceed to Step 2. The user resolves the audit backlog first, then re-invokes reflect.
+
+- [ ] Refuse to run before Step 2 when any cited dataset page has missing or stale `figures_verified:` frontmatter — HARD FAIL if skipped.
+
+```check
+id: reflect.step1_6.figures-verified-gate
+severity: hard-fail
+observable: When any cited dataset page has missing or stale `figures_verified:` (page last-commit date > verification date, or frontmatter absent), transcript contains the literal refuse string "REFUSE: cannot stress-test" with the stale/absent datasets enumerated, AND no Step 2 conjecture-extraction output appears later in the same session. When all cited dataset pages carry `figures_verified: <date>` with date ≥ the dataset page's last-commit date, Step 2 proceeds and the refuse string does not appear.
+rationale: Stress-testing conjectures against unverified figures lets UPGRADE/DOWNGRADE verdicts rest on numbers that could be wrong. Per wiki-cleaning-gates.md §Observed improvements (2), reflect depends on audit — the seam is mechanical or it isn't load-bearing. (codified 2026-04-21 per Tranche 2)
+```
+
 ### Step 2: Extract the central conjectures
 
 Read the synthesis page and identify:
