@@ -87,6 +87,83 @@ Any claim that doesn't trace back to a row ID is either:
 
 This converts the auditor's job from an LLM-judgment task (*"is this figure plausible?"*) to a deterministic diff (*"does claim X cite row Y? does row Y match the primary source?"*).
 
+### Row-ID grammar
+
+Row IDs follow a stable, machine-parseable grammar: `<page-slug>.<stable-kebab-identifier>`.
+
+- **`<page-slug>`** — the page's filename without extension, matching the page exactly (e.g., `gilts`, `thatcher-1979`).
+- **`<stable-kebab-identifier>`** — a kebab-case identifier, may contain dots for semantic grouping (e.g., `all-time-high`, `gilts.peak`, `thatcher.start`).
+- The full row ID therefore has **at least one dot** (separating slug from identifier) and may contain additional dots inside the identifier portion.
+- Examples: `gilts.all-time-high` (dataset-page row with a flat identifier), `thatcher-1979.gilts.peak` (era-page row with a dotted identifier for `<dataset>.<fact>` grouping).
+
+**Stability rule**: IDs are stable across re-audits. Never rename. Adding rows is safe; removing rows requires a `### Disputed` entry explaining why.
+
+**Citation syntax in prose**: use `[[page#row-id]]` — Obsidian/Markdown heading-link syntax. Example: `[[datasets/gilts#gilts.thatcher-peak]]`. Row IDs are machine-parseable by the audit skill regardless of whether Obsidian click-through navigates; navigation is nice-to-have, auditability is load-bearing.
+
+### Path disambiguation (raw-data vs web-consumer paths)
+
+Projects typically have two different path conventions for the same primary-source artifact, and conflating them breaks the audit:
+
+- **Raw-data path** (filesystem) — used by the audit skill to read the primary source. Example: `apps/web/public/data/gilts.json` resolved from the repo root.
+- **Web-consumer path** (URL) — a frontmatter field like `json_path: /data/gilts.json` that a frontend (React, static site) uses for `fetch()` calls.
+
+The two coexist on dataset pages but serve different consumers. Ground-truth tables should name the filesystem path (e.g., `Computed from apps/web/public/data/<name>.json`); the `json_path:` frontmatter is for frontend rendering. Do not use `json_path:` as the audit's reading target — it's a web-relative URL, not a filesystem path.
+
+### Coverage-gap handling
+
+If a dataset doesn't hold a value that the page's prose references (e.g., pre-dataset historical values, derived ratios no dataset tracks), **do not fabricate a row**. Two acceptable responses:
+
+1. **Remove the claim from prose** — the wiki stops asserting what it can't ground.
+2. **Mark the claim external** — per the "External-claim marking" section below. The claim stays as useful context but carries an explicit "not-in-wiki-data" marker so the auditor skips it.
+
+Fabricating a row to satisfy an audit is the anti-pattern. Rows must be computable from primary sources (either directly or by reference to another page's row).
+
+### External-claim marking syntax
+
+(Resolves the former open question about exogenous-claim notation.)
+
+Not every useful claim lives in a wiki dataset. Training-data recall, widely-reported figures, contemporary press citations — these are legitimate *context* but must not be confused with wiki-grounded findings. When prose references a value that is not in any wiki dataset, mark it explicitly. The auditor recognises three syntaxes; any other form triggers an `UNVERIFIABLE` verdict.
+
+**Syntax 1 — Inline parenthetical, within a sentence:**
+
+```markdown
+Unemployment is widely reported to have peaked above 11% in 1984
+(external claim; no unemployment dataset currently in the wiki).
+```
+
+Pattern: `(external claim; <optional source note>)` in the same sentence as the numeric value. The opening keyword `external claim` is required so the parser can disambiguate from ordinary parentheticals.
+
+**Syntax 2 — Inline short-form italicised marker:**
+
+```markdown
+Unemployment is widely reported to have peaked above 11% in 1984 *(external)*.
+```
+
+Pattern: `*(external)*` as a trailing qualifier in the same sentence. Shorter than Syntax 1; use when the external status is obvious from context and a source-note would be noise.
+
+**Syntax 3 — Sectioned, when grouping multiple external claims:**
+
+```markdown
+### External context
+
+The following figures are from contemporary reporting and external
+academic sources, not from data this wiki currently holds. They are
+provided as context and are not subject to audit verification.
+
+- Unemployment peaked above 11% in mid-1980s (source: ONS LFS historical — not ingested)
+- US Fed funds rate hit ~20% in 1981 under Volcker (source: FRED)
+```
+
+The auditor skips `### External context` sections entirely. Use when the page grounds interpretive discussion in widely-accepted external figures without polluting per-sentence prose with markers.
+
+**Forms the auditor does NOT accept** (result in `UNVERIFIABLE` verdicts):
+
+- Bare parenthetical: `(contemporary sources say ~11%)` — no `external claim` keyword
+- Freestanding italic: `*Unemployment peaked ~11%*` — italic alone is not a marker
+- Footnote syntax `[^1]` — the auditor doesn't resolve footnotes
+
+The absence of any accepted marker on an unsourced numeric claim is an audit `UNVERIFIABLE`, not a pass.
+
 ## Two failure subclasses
 
 Inside the fidelity gap, two distinct classes, requiring different defences:
@@ -194,7 +271,7 @@ Five shapes a solution could take. Each addresses different parts of the surface
 - **Claim extraction method**: LLM extraction with structured output (robust, higher token cost) vs regex-on-numeric-patterns (cheap, brittle) vs enforced citation schema (requires rewriting). The skill draft picks one; this blueprint notes the trade.
 - **Ground-truth row coverage**: which facts should be canonical? Peaks, troughs, start/end values, inheritance/exit values for each era are obvious. Beyond that is judgment — err on the side of including a row rather than leaving an implicit claim un-sourceable.
 - **Stale-verification policy**: should `figures_verified:` expire when the cited dataset is re-ingested? Probably yes — the ground-truth table changes, so prose that was verified against the old table is now unverified. Formalise in the audit skill.
-- **External-claim marking syntax**: how should exogenous claims be visually marked in prose so the auditor recognises them? Options include an inline marker like `{{external: <claim>}}` or a section-level `### External context` that the auditor skips. Skill decides.
+- ~~**External-claim marking syntax**~~ — **RESOLVED**. Three accepted syntaxes documented in the *"External-claim marking syntax"* section above (inline parenthetical with `external claim` keyword; trailing `*(external)*` italic marker; sectioned `### External context`).
 
 ## Three-artifact principle
 
