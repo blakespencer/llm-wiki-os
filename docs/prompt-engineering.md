@@ -8,6 +8,7 @@ Related blueprints:
 - `karpathy-fidelity.md` — the write-time correctness invariant the cleaning gates enforce
 - `cleaning-gates.md` — the four-gate model whose skills get iterated via this process
 - `planning-discipline.md` — reconnaissance-kills-assumption pattern, which applies to iteration on skills just as much as to implementation plans
+- `pipeline-composition.md` — skills in all three pipelines are iterated via this process; elevation from overlay to blueprint is the doc-level version of the N=1→N=2 rule codified here
 
 Related skills: every `llm-wiki-os/commands/*.md` skill file is an artifact of this process.
 

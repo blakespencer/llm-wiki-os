@@ -7,6 +7,7 @@ Diagnosis of the write-time correctness invariant the Karpathy LLM Wiki pattern 
 Related blueprints:
 - `cleaning-gates.md` — the four-gate model (`/wiki:lint` → `/wiki:audit` → `/wiki:reflect` → `/wiki:coherence`) that enforces this invariant at run-time
 - `prompt-engineering.md` — the skill-iteration methodology and N=2 codification rule that governs how blueprints evolve
+- `pipeline-composition.md` — the three-pipeline composition model whose Pipeline 1 → Pipeline 2 handoff contract depends on the `figures_verified:` + `stress_tested:` frontmatter markers diagnosed here
 
 Related skills: `llm-wiki-os/commands/audit.md` — the specific skill file that enforces the contract this blueprint diagnoses.
 

@@ -8,6 +8,7 @@ Related blueprints:
 - `karpathy-fidelity.md` — the write-time correctness invariant, which is the data-layer analogue of what planning-discipline is at the work-layer (both apply Popperian falsification to different substrates)
 - `cleaning-gates.md` — the gates that catch errors the planning discipline is supposed to have prevented upstream
 - `prompt-engineering.md` — the iteration methodology for skills, which is itself an instance of the reconnaissance-first pattern (fresh-session test IS the reconnaissance)
+- `pipeline-composition.md` — Pipeline 3's `<plan>` step is where this discipline applies most directly; reconnaissance-depth-scaling applies to any pipeline step that depends on external authorities
 
 ---
 

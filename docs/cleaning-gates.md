@@ -7,6 +7,7 @@ Strategic model for keeping a Karpathy-pattern wiki high-fidelity over time. Dis
 Related blueprints:
 - `karpathy-fidelity.md` — diagnosis of the write-time correctness invariant that `/wiki:audit` (the second gate) exists to enforce
 - `prompt-engineering.md` — the skill-iteration methodology that governs how gates evolve and how overlays propose elevations
+- `pipeline-composition.md` — the three-pipeline composition model; the cleaning gates produce the `figures_verified:` + `stress_tested:` frontmatter markers that Pipeline 2 consumers gate on
 
 Related skills: `llm-wiki-os/commands/lint.md`, `audit.md`, `reflect.md`, and a planned `coherence.md`.
 
