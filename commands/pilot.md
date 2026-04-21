@@ -48,11 +48,14 @@ Read these before engaging. Load what exists; skip gracefully when a project doe
 ### The wiki-kit core (always available)
 
 - `llm-wiki-os/commands/*.md` — all wiki skills (`discover`, `ingest`, `query`, `lint`, `audit`, `reflect`, and any others that ship with the kit)
-- `llm-wiki-os/docs/karpathy-fidelity.md` — write-time correctness invariant + three-layer compilation model
+- `llm-wiki-os/docs/karpathy-fidelity.md` — write-time correctness invariant + three-layer compilation model + row-ID grammar + path disambiguation + coverage-gap handling + external-claim marking syntax
 - `llm-wiki-os/docs/cleaning-gates.md` — four-gate cleaning model (lint → audit → reflect → coherence)
 - `llm-wiki-os/docs/prompt-engineering.md` — skill-iteration methodology + N=1→N=2 codification rule
 - `llm-wiki-os/docs/planning-discipline.md` — reconnaissance-kills-assumption pattern
 - `llm-wiki-os/docs/pipeline-composition.md` — three-pipeline composition model (data quality → product strategy → implementation) + handoff contracts + perpetual feedback loop
+- `llm-wiki-os/docs/philosophical-framework.md` — ground/ceiling/lenses scaffold + single-answer-wrong principle + lens-plurality template + LLM-bookkeeping vs human-interpretation role division
+- `llm-wiki-os/docs/source-epistemology.md` — 7-question framework + source-type skepticism-spectrum table structure + "right grip" principle + `### Source assessment` convention
+- `llm-wiki-os/docs/data-quality-discontinuities.md` — splice / coverage / overlap three-category documentation discipline
 - `llm-wiki-os/README.md` — what the kit is and how it installs
 
 ### The project's wiki schema (convention: `wiki/CLAUDE.md` at project root)
