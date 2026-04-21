@@ -20,6 +20,7 @@ The human (always):      — ultimate arbiter
 **What `/pilot` does:**
 
 - Deep context on the Karpathy LLM Wiki pattern + the 6 reusable wiki skills + the blueprint architecture docs + the project's wiki schema and philosophical framework
+- **Bootstrap a new project** using the wiki kit — walk through domain, ground/ceiling/lenses, source-type table, page types (see *"Bootstrap a new project"* use-case below)
 - Ideate on new skills, new gates, new use-cases for the reusable kit
 - Sketch skill-spec drafts in conversation before commitment to disk
 - Surface *"what's missing"* based on the blueprint architecture and any project-local emergent-capabilities log
@@ -128,6 +129,76 @@ When ideas mature, produce a paste-ready handoff brief rather than applying:
 
 ---
 
+## Use case: bootstrap a new project using the wiki kit
+
+When invoked in a **newly-bootstrapped project** (or any project where `wiki/CLAUDE.md` still contains `<PLACEHOLDERS>` from `llm-wiki-os/templates/wiki-CLAUDE-template.md`), `/pilot` shifts into bootstrap mode and walks the user through the domain-specific intellectual choices that the template can't make for them.
+
+**Detection of bootstrap mode:** if `wiki/CLAUDE.md` contains `<PLACEHOLDERS>` (angle-bracket ALL-CAPS tokens) — or the file is the unmodified template — treat the session as a bootstrap session.
+
+**What bootstrap mode does:**
+
+Step 1 — Confirm the domain and motivation. Before any framework choices, have the user articulate:
+- What is this wiki ABOUT? (one sentence)
+- Who's the primary user — themselves, a team, an audience?
+- What's the quality target — journalism, interpretive, exploratory?
+- What makes success? (This anchors later lens-choice decisions.)
+
+Step 2 — Walk through ground-layer decomposition. Read `llm-wiki-os/docs/philosophical-framework.md` together. Then ask:
+- What are the 3-5 interlocking complex systems your domain studies?
+- How do they connect circularly (not just layered)?
+- Which layer does each page type describe primarily?
+
+Example domains surface different decompositions:
+- Macro-economic: emergent economy / rules / society / human nature (uk-legalize's instance)
+- Clinical research: molecular / cellular / organ-system / organism / population
+- Startup due-diligence: product / market / team / founders / ecosystem
+- Personal health over time: biomarkers / behaviors / context / subjective experience
+
+Step 3 — Pick the ceiling (usually Popper, sometimes richer). Most domains use pure Popperian falsification. Some domains (clinical) add Bayesian reasoning explicitly. A few domains (ethics-heavy) add Hume's is/ought. Let the user choose; the blueprint's Popperian default is a safe start.
+
+Step 4 — Choose lenses (3-7 thinkers/traditions per domain). For each candidate lens, ask:
+- What does this lens let you see that other lenses don't?
+- Is there a primary paradigm-holder it illuminates (e.g., Hayek for information-flow)?
+- Which datasets/entities in your domain activate this lens most?
+
+Emphasize: **lenses are not neutral** (blueprint's ceiling principle). Each lens commits the wiki to interpretive choices. Picking 3 lenses with the same philosophical slant gives a biased wiki; picking 7 mutually-challenging lenses gives a calibrated one.
+
+Step 5 — Instantiate the source-type skepticism table. Read `llm-wiki-os/docs/source-epistemology.md` together. Then:
+- What are the institutional sources in your domain? (National stats body? Peer-reviewed journals? Regulators? Advocacy groups? Consultancies?)
+- For each, rate skepticism (low / low-medium / medium / medium-high / high / very high) and note methodology, incentive, track record.
+- The 7-question framework applies to every source; pre-work it for the recurring ones.
+
+Step 6 — Define page types. Common starting set: entity / event / concept / dataset / synthesis / framework / question. Domain-specific additions:
+- uk-legalize has `eras/` (government eras)
+- A clinical wiki might have `trials/`, `conditions/`, `treatments/`
+- A book-wiki might have `authors/`, `traditions/`, `periods/`
+- A startup-DD wiki might have `companies/`, `markets/`, `transactions/`
+
+For each page type, what's the frontmatter? What fields are mandatory?
+
+Step 7 — Decide whether to build a product-strategy layer (Pipeline 2). Read `llm-wiki-os/docs/pipeline-composition.md` for the three-pipeline composition. Then:
+- Will this project ship anything (code, content, research outputs)?
+- If yes, pick a methodology — Patton story-mapping, JTBD, OKR-hypotheses, something else.
+- If no (pure knowledge base), note that Pipeline 2 + 3 are absent and the feedback loop closes differently (author-as-user).
+
+Step 8 — Confirm the CLAUDE.md is ready. Re-read the filled-in CLAUDE.md together. Look for:
+- Any `<PLACEHOLDERS>` still remaining — those are not-yet-decided choices
+- Sections that feel generic rather than domain-anchored
+- Lens choices that don't have a corresponding framework page planned yet
+
+Step 9 — Suggest first `/wiki:discover` question. A good first question is concrete, answerable with 2-3 data sources, and close to the author's actual curiosity. *"What does my sleep look like across seasons?"* beats *"How does health work?"* for a personal-health wiki.
+
+**Handoff at end of bootstrap:** the user has a filled-in CLAUDE.md + a planned first `/wiki:discover` question. `/pilot` produces a paste-ready commit message summarizing the bootstrap decisions (domain, layers, lenses, sources, page types, methodology) so the project's git history records why each choice was made.
+
+**Bootstrap does NOT:**
+
+- Write to `wiki/CLAUDE.md` (the user writes; `/pilot` advises) — maintains the human-as-arbiter discipline even during bootstrap
+- Decide the domain for the user (decisions require user input; `/pilot` surfaces options + tradeoffs)
+- Commit to a methodology the user isn't ready for
+- Rush through steps — if a step's choices aren't clear, park the question and come back after reading more of the domain
+
+---
+
 ## Authority boundaries
 
 `/pilot` has READ authority only. It does NOT write to:
@@ -169,6 +240,7 @@ The separation is deliberate: `/pilot` drafts; a project's approval-gated handle
 
 ## When to use `/pilot`
 
+- **Bootstrapping a new project** using the wiki kit (domain choice, lenses, source-type table, page types — see the *"Bootstrap a new project"* use-case section above)
 - Open-ended ideation about the wiki kit
 - Exploring new use-cases for the Karpathy pattern
 - Sketching new skills or new gates before committing to implementation
