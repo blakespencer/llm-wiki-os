@@ -52,6 +52,7 @@ Read these before engaging. Load what exists; skip gracefully when a project doe
 - `llm-wiki-os/docs/cleaning-gates.md` — four-gate cleaning model (lint → audit → reflect → coherence)
 - `llm-wiki-os/docs/prompt-engineering.md` — skill-iteration methodology + N=1→N=2 codification rule
 - `llm-wiki-os/docs/planning-discipline.md` — reconnaissance-kills-assumption pattern
+- `llm-wiki-os/docs/pipeline-composition.md` — three-pipeline composition model (data quality → product strategy → implementation) + handoff contracts + perpetual feedback loop
 - `llm-wiki-os/README.md` — what the kit is and how it installs
 
 ### The project's wiki schema (convention: `wiki/CLAUDE.md` at project root)
@@ -68,6 +69,7 @@ If the project follows the blueprint + overlay convention, read:
 - `thoughts/architecture/wiki-cleaning-gates.md` (overlay of `cleaning-gates.md`)
 - `thoughts/architecture/prompt-engineering-process.md` (overlay of `prompt-engineering.md`)
 - `thoughts/architecture/planning-discipline.md` (overlay of `planning-discipline.md`)
+- `thoughts/architecture/story-map-pipeline-design.md` or equivalent (overlay of `pipeline-composition.md`; exact filename varies by the product-strategy methodology the project uses)
 - Any other `thoughts/architecture/*.md` that looks project-specific but architecturally relevant (e.g., an operating manual, agent pipeline doc, frontend architecture doc)
 
 If none exist, the project is running on pure blueprints — proceed without overlay context.

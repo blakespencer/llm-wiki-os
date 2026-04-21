@@ -35,7 +35,7 @@ The separation matters: a single agent that both ingests AND verifies can ration
 | Skill | Invariant | Catches | Misses |
 |---|---|---|---|
 | `/wiki:lint` | Structural integrity — does the wiki follow its own schema? | Broken wikilinks, orphans, missing `## Ground truth` sections, missing frontmatter fields, stale scaffold labels, one-way links | Everything factual |
-| `/wiki:audit` | Factual fidelity — do prose claims match primary data? | Numeric claims disagreeing with ground-truth rows, ground-truth rows disagreeing with primary sources, broken citations, uncited claims | Whether the claim's conjecture makes sense |
+| `/wiki:audit` | Factual fidelity — do prose claims match primary data? | Numeric claims disagreeing with ground-truth rows, ground-truth rows disagreeing with the primary-source artifact (e.g., JSON file, xlsx cell), broken citations, uncited claims | Whether the claim's conjecture makes sense |
 | `/wiki:reflect` | Epistemic honesty — are conjectures supported + explicitly falsifiable? | Un-stress-tested conjectures, missing refuter criteria, single-answer synthesis, stale verdicts after new evidence | Whether the facts underpinning the conjecture are correct; whether different conjectures inside a page contradict each other |
 | `/wiki:coherence` *(planned)* | Internal consistency — do a page's own conjectures imply contradicting things? Does a synthesis's dispersed cross-references agree with each other across pages? | Conjecture A implies X, conjecture B implies not-X; synthesis page quotes figure Z, but two different ground-truth rows both claim to be Z with different values; event page says X happened during era Y, but era page says X happened during era Z | Everything the other three already catch |
 
@@ -101,11 +101,11 @@ Triggers SHOULD be post-commit (git hook notices an ingest → queues gate runs)
 Gates SHOULD refuse to promote when failing.
 A dashboard SHOULD surface which pages are at which gate level.
 
-Today, in most implementations, all of this is manual. The candidate improvements below are the path toward "CI/CD for the brain."
+Today, all of this is manual. The candidate improvements below are the path toward "CI/CD for the brain."
 
 ## Candidate improvements (design space)
 
-Ranked roughly by leverage × cost. Projects can ship these in any order based on local priority.
+Ranked by leverage × cost. Projects specialize the ordering in their overlay based on local state, but the generic ranking reflects dependency structure (coherence is the fourth gate; mechanical enforcement needs the fourth gate to be live; the trigger queue needs enforcement to be load-bearing; coverage stats sit on top of all three).
 
 ### (1) New `/wiki:coherence` skill — the fourth gate
 
@@ -137,7 +137,7 @@ Cheap, self-healing. Each cleaning agent should refuse-to-run when preconditions
 - `/wiki:audit` — refuses to run when last `/wiki:lint` run is more than N days old OR when the target page has unresolved lint findings. Halt with *"lint first; structural gaps will produce false audit verdicts."*
 - **Downstream consumer skills** — refuse when either `figures_verified:` or `stress_tested:` on the target synthesis is missing or stale. Analogous to existing `stress_tested:` enforcement patterns.
 
-**Priority:** typically after coherence; these are skill-file edits rather than new-skill builds.
+**Priority:** after coherence; these are skill-file edits rather than new-skill builds.
 
 ### (3) Post-commit trigger queue
 
