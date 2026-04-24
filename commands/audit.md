@@ -34,6 +34,40 @@ Diagnosis: `thoughts/architecture/wiki-claim-fidelity.md`. Schema contracts this
 5. Read every page's frontmatter and body
 6. List all JSON files in the raw-data location declared in `wiki/CLAUDE.md` (default: `apps/web/public/data/*.json`)
 
+### Step 1.5: Precondition — refuse on stale `/wiki:lint`
+
+**Refuse to run if the most recent `/wiki:lint` entry in `wiki/log.md` is older than 7 days, or absent.** Audit's claim-verification depends on structural preconditions (ground-truth sections present, row IDs well-formed, no orphan citations) that `/wiki:lint` enforces. Running audit against a wiki with stale lint risks false-UNVERIFIABLE cascades — claims flagged as broken citations when the real issue is a missing ground-truth section that lint would have caught. Per `thoughts/architecture/wiki-cleaning-gates.md` §Dependency chain + §Observed improvements (2), audit depends on lint: lint first, then audit.
+
+**Staleness rule** (N=7 days, hardcoded):
+1. Read `wiki/log.md`.
+2. Find the newest header matching the regex `^## \[(\d{4}-\d{2}-\d{2})\] lint \|`.
+3. If no such header exists → stale (never-linted).
+4. If `today - date > 7 days` → stale.
+
+**If stale or absent, halt with:**
+
+```
+REFUSE: cannot audit — /wiki:lint log entry is stale or absent.
+
+Newest lint entry: <YYYY-MM-DD | "none found">  (<N days ago | "never">)
+Staleness threshold: 7 days.
+
+Lint first via /wiki:lint, then re-invoke /wiki:audit.
+```
+
+Do not proceed to Step 2. The user runs lint; the new log entry advances the staleness cursor; then audit re-runs.
+
+- [ ] Refuse to run before Step 2 when the newest `## [YYYY-MM-DD] lint |` entry in `wiki/log.md` is absent or more than 7 days old — HARD FAIL if skipped.
+
+```check
+id: audit.step1_5.lint-freshness-gate
+severity: hard-fail
+observable: When `wiki/log.md` lacks a `## [YYYY-MM-DD] lint |` entry within the last 7 days (including never-linted), transcript contains the literal refuse string "REFUSE: cannot audit" with the newest-lint date or "none found" reported, AND no Step 2 ground-truth indexing output appears later in the same session. When a fresh lint entry (≤ 7 days old) exists, Step 2 proceeds and the refuse string does not appear.
+rationale: Audit's claim verification depends on structural preconditions /wiki:lint enforces (ground-truth sections, row-ID grammar, schema fidelity). Running audit against stale lint risks false-UNVERIFIABLE cascades. Per wiki-cleaning-gates.md §Dependency chain + §Observed improvements (2), audit depends on lint. (codified 2026-04-24 per Tranche 2)
+```
+
+**Future hardening (not yet enforced):** additionally refuse to run in scoped mode (`/wiki:audit <page>` or `/wiki:audit --dataset <name>`) when the target page has unresolved lint findings. Deferred because `wiki/log.md` uses free-prose narrative — lint doesn't currently emit a machine-parseable per-page findings list audit can grep against. Promoting this check requires a `lint.md` scope-addition to emit structured finding markers (e.g., an `### Unresolved findings` sub-section with one page path per bullet in each lint log entry). When that format lands, this precondition extends to scope-mode by path-matching against the newest lint entry's unresolved-findings list. Tracked in `thoughts/notes/meta-debt-queue.md`.
+
 ### Step 2: Build the ground-truth index
 
 For every dataset page and every era page, parse the `## Ground truth` section into a row-ID → value map.
